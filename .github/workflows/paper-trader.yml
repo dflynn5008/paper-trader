@@ -1,0 +1,46 @@
+name: Paper Trader
+
+on:
+  schedule:
+    # Mon-Fri at 21:30 UTC (~4:30 PM Eastern in winter, ~5:30 PM in summer)
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore portfolio state
+        uses: actions/cache@v4
+        with:
+          path: state
+          key: paper-trader-portfolio-state
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run paper trader
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALPACA_PAPER: "true"
+          SYMBOLS: "F,SOFI,PLTR,AMD,QQQ"
+          STARTING_CAPITAL: "100"
+          TRADE_NOTIONAL_USD: "25"
+          MAX_POSITIONS: "2"
+          MAX_DAILY_ORDERS: "3"
+          DISCORD_ALERT_SIGNALS: "false"
+        run: python run.py
