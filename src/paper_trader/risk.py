@@ -116,6 +116,13 @@ def validate_trade(
         return False, f"Daily order limit reached ({settings.max_daily_orders})"
 
     if signal == Signal.BUY:
+        floor = settings.starting_capital * (1 - settings.max_drawdown_pct / 100)
+        if snapshot.virtual_equity < floor:
+            return (
+                False,
+                f"Drawdown guard: equity ${snapshot.virtual_equity:.2f} below "
+                f"${floor:.2f} floor ({settings.max_drawdown_pct:.0f}% max drawdown)",
+            )
         if position_qty > 0:
             return False, "Already long; skipping duplicate BUY"
         if snapshot.open_positions >= settings.max_positions:

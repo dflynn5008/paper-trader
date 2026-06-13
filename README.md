@@ -45,7 +45,8 @@ Runs on GitHub's servers — **no need to keep your PC on**.
 | Workflow | Market | Schedule |
 |----------|--------|----------|
 | **Paper Trader** | US stocks | Mon–Fri 21:30 UTC (~4:30 PM Eastern) |
-| **Paper Trader Crypto** | Crypto (24/7) | Every 4 hours, all week |
+| **Paper Trader Crypto** | Crypto (24/7) | Every hour — trades only on signals |
+| **Paper Trader Daily Report** | Summary | Daily at 22:00 UTC (~6 PM Eastern) on Discord |
 
 ### Markets at a glance
 
@@ -54,6 +55,25 @@ Runs on GitHub's servers — **no need to keep your PC on**.
 - Alpaca also offers **24/5 stock trading** for some symbols, but this bot keeps stocks on the weekday daily schedule for now.
 
 Stocks and crypto use **separate virtual $100 portfolios** and separate state files.
+
+### Daily Discord dashboard
+
+No separate web UI yet — your **daily report** lands in Discord with:
+
+- Combined virtual equity and % change
+- Stock and crypto positions, P&L, and status
+- Current signals per symbol (what the bot is thinking)
+
+Test locally: `python run_report.py`
+
+### Smarter trading (not just blind schedules)
+
+The bot **checks often** but **only trades when filters pass**:
+
+- SMA crossover signal fires
+- **Wisdom filter** confirms trend direction (e.g. won't buy if price is still below the slow average)
+- **Drawdown guard** blocks new buys if you're down more than 20% from start
+- **Capital floor** halts everything if virtual equity hits $0
 
 ### 1. Push this repo to GitHub
 

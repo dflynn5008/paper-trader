@@ -25,6 +25,7 @@ class Settings:
     trade_notional_usd: float
     max_positions: int
     max_daily_orders: int
+    max_drawdown_pct: float
     discord_webhook_url: str | None
     discord_alert_signals: bool
     state_path: str
@@ -74,6 +75,7 @@ def _load_common(market: MarketKind) -> Settings:
         trade_notional = float(os.getenv("TRADE_NOTIONAL_USD", "25"))
         max_positions = int(os.getenv("MAX_POSITIONS", "2"))
         max_daily_orders = int(os.getenv("MAX_DAILY_ORDERS", "3"))
+        max_drawdown_pct = float(os.getenv("MAX_DRAWDOWN_PCT", "20"))
         state_path = str(STOCK_STATE_PATH)
     else:
         symbols = _parse_symbols(
@@ -83,7 +85,8 @@ def _load_common(market: MarketKind) -> Settings:
         starting_capital = float(os.getenv("CRYPTO_STARTING_CAPITAL", "100"))
         trade_notional = float(os.getenv("CRYPTO_TRADE_NOTIONAL_USD", "25"))
         max_positions = int(os.getenv("CRYPTO_MAX_POSITIONS", "2"))
-        max_daily_orders = int(os.getenv("CRYPTO_MAX_DAILY_ORDERS", "6"))
+        max_daily_orders = int(os.getenv("CRYPTO_MAX_DAILY_ORDERS", "12"))
+        max_drawdown_pct = float(os.getenv("CRYPTO_MAX_DRAWDOWN_PCT", "20"))
         state_path = str(CRYPTO_STATE_PATH)
 
     if starting_capital <= 0:
@@ -103,6 +106,7 @@ def _load_common(market: MarketKind) -> Settings:
         trade_notional_usd=trade_notional,
         max_positions=max_positions,
         max_daily_orders=max_daily_orders,
+        max_drawdown_pct=max_drawdown_pct,
         discord_webhook_url=os.getenv("DISCORD_WEBHOOK_URL", "").strip() or None,
         discord_alert_signals=os.getenv("DISCORD_ALERT_SIGNALS", "false").strip().lower()
         in {"1", "true", "yes", "on"},

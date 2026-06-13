@@ -17,6 +17,7 @@ from paper_trader.risk import (
 )
 from paper_trader.strategy import evaluate_sma_crossover
 from paper_trader.strategy.sma_crossover import Signal
+from paper_trader.strategy.wisdom import refine_with_wisdom
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ def run_trading_cycle(
 
     for symbol in settings.symbols:
         bars = fetch_bars(settings, symbol)
-        result = evaluate_sma_crossover(bars)
+        result = refine_with_wisdom(evaluate_sma_crossover(bars), bars)
         logger.info(
             "%s | %s | fast=%.2f slow=%.2f | %s",
             symbol,

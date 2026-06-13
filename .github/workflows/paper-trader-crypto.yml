@@ -2,8 +2,8 @@ name: Paper Trader Crypto
 
 on:
   schedule:
-    # Every 4 hours, 24/7 — crypto markets never close
-    - cron: "0 */4 * * *"
+    # Every hour, 24/7 — only trades when signals + wisdom filters pass
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -41,6 +41,8 @@ jobs:
           CRYPTO_STARTING_CAPITAL: "100"
           CRYPTO_TRADE_NOTIONAL_USD: "25"
           CRYPTO_MAX_POSITIONS: "2"
-          CRYPTO_MAX_DAILY_ORDERS: "6"
+          CRYPTO_MAX_DAILY_ORDERS: "12"
+          MAX_DRAWDOWN_PCT: "20"
+          CRYPTO_MAX_DRAWDOWN_PCT: "20"
           DISCORD_ALERT_SIGNALS: "false"
         run: python run_crypto.py
