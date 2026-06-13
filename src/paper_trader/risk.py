@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from alpaca.trading.client import TradingClient
-from alpaca.trading.enums import OrderSide, QueryOrderStatus
+from alpaca.trading.enums import QueryOrderStatus
 from alpaca.trading.requests import GetOrdersRequest
 
 from paper_trader.config import Settings
@@ -17,18 +17,38 @@ class CapitalSnapshot:
     cash_remaining: float
 
 
+def _normalize_symbol(symbol: str) -> str:
+    return symbol.replace("/", "").upper()
+
+
+def _symbol_matches(watch_symbol: str, position_symbol: str) -> bool:
+    return _normalize_symbol(watch_symbol) == _normalize_symbol(position_symbol)
+
+
 def get_watchlist_positions(client: TradingClient, symbols: tuple[str, ...]):
     positions = client.get_all_positions()
-    watchlist = set(symbols)
-    return [position for position in positions if position.symbol in watchlist]
+    return [
+        position
+        for position in positions
+        if any(_symbol_matches(symbol, position.symbol) for symbol in symbols)
+    ]
 
 
-def get_open_position_qty(client: TradingClient, symbol: str) -> int:
+def get_open_position(client: TradingClient, symbol: str):
+    for candidate in (symbol, symbol.replace("/", "")):
+        try:
+            return client.get_open_position(candidate)
+        except Exception:
+            continue
+    raise ValueError(f"No open position for {symbol}")
+
+
+def get_open_position_qty(client: TradingClient, symbol: str) -> float:
     try:
-        position = client.get_open_position(symbol)
-        return int(float(position.qty))
+        position = get_open_position(client, symbol)
+        return float(position.qty)
     except Exception:
-        return 0
+        return 0.0
 
 
 def count_todays_orders(client: TradingClient) -> int:
@@ -113,6 +133,6 @@ def validate_trade(
     if signal == Signal.SELL:
         if position_qty <= 0:
             return False, "No open position to sell"
-        return True, f"Approved SELL of {position_qty} shares"
+        return True, f"Approved SELL of {position_qty} units"
 
     return False, f"Unsupported signal: {signal}"

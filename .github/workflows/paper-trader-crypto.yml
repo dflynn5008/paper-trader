@@ -1,0 +1,46 @@
+name: Paper Trader Crypto
+
+on:
+  schedule:
+    # Every 4 hours, 24/7 — crypto markets never close
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Restore crypto portfolio state
+        uses: actions/cache@v5
+        with:
+          path: state
+          key: paper-trader-crypto-portfolio-state
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crypto paper trader
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALPACA_PAPER: "true"
+          CRYPTO_SYMBOLS: "BTC/USD,ETH/USD,SOL/USD"
+          CRYPTO_STARTING_CAPITAL: "100"
+          CRYPTO_TRADE_NOTIONAL_USD: "25"
+          CRYPTO_MAX_POSITIONS: "2"
+          CRYPTO_MAX_DAILY_ORDERS: "6"
+          DISCORD_ALERT_SIGNALS: "false"
+        run: python run_crypto.py

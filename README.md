@@ -40,10 +40,20 @@ Logs are written to `logs/trader.log`.
 
 ## GitHub Actions (cloud schedule)
 
-Runs weekdays on GitHub's servers — **no need to keep your PC on**.
+Runs on GitHub's servers — **no need to keep your PC on**.
 
-Workflow: `.github/workflows/paper-trader.yml`  
-Schedule: Mon–Fri at 21:30 UTC (~4:30 PM US Eastern in winter)
+| Workflow | Market | Schedule |
+|----------|--------|----------|
+| **Paper Trader** | US stocks | Mon–Fri 21:30 UTC (~4:30 PM Eastern) |
+| **Paper Trader Crypto** | Crypto (24/7) | Every 4 hours, all week |
+
+### Markets at a glance
+
+- **Crypto** — true 24/7 (BTC, ETH, SOL, etc.). Uses hourly bars.
+- **US stocks** — regular hours ~9:30 AM–4:00 PM ET, Mon–Fri. Uses daily bars after close.
+- Alpaca also offers **24/5 stock trading** for some symbols, but this bot keeps stocks on the weekday daily schedule for now.
+
+Stocks and crypto use **separate virtual $100 portfolios** and separate state files.
 
 ### 1. Push this repo to GitHub
 
@@ -85,7 +95,8 @@ src/paper_trader/
   executor.py          # order submission
   notifier.py          # Discord alerts
   portfolio_state.py   # virtual capital tracking
-run.py                 # entry point
+run.py                 # stock entry point
+run_crypto.py          # crypto entry point (24/7)
 scripts/run_scheduled.ps1  # optional local Windows runner
 ```
 
