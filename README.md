@@ -2,6 +2,8 @@
 
 A minimal Alpaca **paper trading** bot to experiment with automated stock strategies safely.
 
+Also in this repo: **[AD WATCHER INC.](ad-watcher-inc/)** — a Unity idle/tap game MVP (plus browser preview) about watching ads.
+
 ## What it does
 
 1. Connects to your Alpaca paper account

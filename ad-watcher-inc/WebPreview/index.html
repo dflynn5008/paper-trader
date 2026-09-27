@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>AD WATCHER INC.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,700;1,9..40,500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #12171f;
+      --panel: #1e2633;
+      --text: #f2f4f8;
+      --muted: #a6b0c0;
+      --lime: #8cf259;
+      --cta: #ff731f;
+      --cta-dim: #5a616c;
+      --track: #343a45;
+      --gold: #ffc733;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #243044 0%, transparent 55%),
+        linear-gradient(180deg, #0d1118 0%, var(--bg) 40%, #0a0e14 100%);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+    }
+    .phone {
+      width: min(420px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+    .brand {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 7vw, 2.4rem);
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin: 18px 0 0;
+      line-height: 1.05;
+      animation: rise 0.7s ease both;
+    }
+    .tag {
+      text-align: center;
+      color: var(--muted);
+      margin: 0;
+      animation: rise 0.8s ease both;
+    }
+    .attention {
+      text-align: center;
+      color: var(--lime);
+      font-family: Syne, sans-serif;
+      font-size: clamp(1.6rem, 6vw, 2rem);
+      font-weight: 700;
+      margin: 18px 0 0;
+      animation: rise 0.9s ease both;
+    }
+    .stats {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0;
+    }
+    .watch {
+      margin-top: 18px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--cta);
+      color: white;
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.04em;
+      padding: 22px 16px;
+      cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease, background 0.2s;
+      box-shadow: 0 10px 30px rgba(255, 115, 31, 0.25);
+      animation: rise 1s ease both;
+    }
+    .watch:hover:not(:disabled) { filter: brightness(1.06); }
+    .watch:active:not(:disabled) { transform: scale(0.98); }
+    .watch:disabled {
+      background: var(--cta-dim);
+      box-shadow: none;
+      cursor: default;
+    }
+    .status {
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+      min-height: 1.4em;
+      margin: 4px 0 8px;
+    }
+    .section {
+      font-family: Syne, sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      margin: 8px 2px 0;
+    }
+    .upgrade {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      padding: 14px 16px;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .upgrade.can-buy {
+      background: #28392a;
+      outline: 1px solid rgba(140, 242, 89, 0.35);
+    }
+    .upgrade:disabled { opacity: 0.75; cursor: default; }
+    .upgrade:active:not(:disabled) { transform: scale(0.99); }
+    .upgrade strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+    .upgrade span { color: var(--muted); font-size: 0.88rem; }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 10, 14, 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 50;
+      animation: fade 0.2s ease;
+    }
+    .overlay .card {
+      max-width: 420px;
+    }
+    .overlay.show { display: flex; }
+    .card {
+      width: 100%;
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 22px 18px;
+      text-align: center;
+      animation: pop 0.28s ease;
+    }
+    .eyebrow {
+      color: var(--cta);
+      font-family: Syne, sans-serif;
+      letter-spacing: 0.08em;
+      font-size: 0.85rem;
+      margin: 0 0 12px;
+    }
+    .headline {
+      font-family: Syne, sans-serif;
+      font-size: 1.25rem;
+      margin: 0 0 22px;
+      line-height: 1.25;
+    }
+    .track {
+      height: 12px;
+      background: var(--track);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold), var(--cta));
+      transition: width 0.05s linear;
+    }
+    .timer { color: var(--muted); margin: 0; }
+    .claim {
+      margin-top: 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--cta);
+      color: #fff;
+      font-family: Syne, sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 18px;
+      width: 70%;
+      cursor: pointer;
+    }
+    .hint {
+      margin-top: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      padding-top: 16px;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="app">
+    <h1 class="brand">AD WATCHER INC.</h1>
+    <p class="tag">Tap. Watch. Ascend.</p>
+    <div class="attention" id="attention">0 Attention</div>
+    <p class="stats" id="stats">Ads watched: 0 · Autoplay: 0/s</p>
+    <button class="watch" id="watchBtn" type="button">WATCH AD (5.0s)</button>
+    <p class="status" id="status">First upgrade unlocks in a few taps.</p>
+    <div class="section">UPGRADES</div>
+    <div id="upgrades"></div>
+    <p class="hint">Browser preview of the Unity MVP · progress saves locally</p>
+
+    <div class="overlay" id="adOverlay">
+      <div class="card">
+        <p class="eyebrow">REWARDED AD</p>
+        <p class="headline" id="adHeadline"></p>
+        <div class="track"><div class="fill" id="adFill"></div></div>
+        <p class="timer" id="adTimer">Skip unavailable</p>
+      </div>
+    </div>
+
+    <div class="overlay" id="offlineOverlay">
+      <div class="card">
+        <p class="eyebrow" style="color: var(--lime)">WHILE YOU WERE AWAY</p>
+        <p class="headline" id="offlineBody"></p>
+        <button class="claim" id="claimBtn" type="button">CLAIM</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const UPGRADES = [
+      { id: 0, name: "Shorter Skip Timer", description: "Ads finish faster. Efficiency!", baseCost: 15, growth: 1.35, max: 50 },
+      { id: 1, name: "Autoplay", description: "Passive Attention while you 'watch'.", baseCost: 40, growth: 1.45, max: 50 },
+      { id: 2, name: "Better CPM", description: "Each completed ad pays more.", baseCost: 25, growth: 1.4, max: 50 },
+      { id: 3, name: "Multi-Stream", description: "Watch multiple ads at once. Totally fine.", baseCost: 120, growth: 1.55, max: 10 }
+    ];
+    const HEADLINES = [
+      "Dentists HATE this one Attention hack",
+      "Download Farm Saga Legend Royale — Free*",
+      "Your inventory is full. Buy more slots?",
+      "Congrats! You're visitor #1,000,000",
+      "Single COOs in your area are hiring",
+      "This VPN protects you from other ads",
+      "Learn AdOps in 3 minutes (not really)",
+      "Rate us 5 stars to skip this ad",
+      "Unskippable synergy awaits",
+      "Install now — continue watching later"
+    ];
+    const BRANDS = ["GlowBean™", "TapForge", "CloudNibble", "SynergyLoot", "QuietPhone Case Co.", "MetricBeans", "ScrollVault", "PromoGoblin"];
+    const SAVE_KEY = "ad_watcher_inc_preview_v1";
+
+    const state = load();
+    let adPlaying = false;
+    let adElapsed = 0;
+    let adDuration = 5;
+    let lastTs = performance.now();
+
+    const el = {
+      attention: document.getElementById("attention"),
+      stats: document.getElementById("stats"),
+      watchBtn: document.getElementById("watchBtn"),
+      status: document.getElementById("status"),
+      upgrades: document.getElementById("upgrades"),
+      adOverlay: document.getElementById("adOverlay"),
+      adHeadline: document.getElementById("adHeadline"),
+      adFill: document.getElementById("adFill"),
+      adTimer: document.getElementById("adTimer"),
+      offlineOverlay: document.getElementById("offlineOverlay"),
+      offlineBody: document.getElementById("offlineBody"),
+      claimBtn: document.getElementById("claimBtn")
+    };
+
+    function format(n) {
+      const abs = Math.abs(n);
+      if (abs < 1000) return Math.floor(n).toString();
+      const units = ["", "K", "M", "B", "T", "Qa"];
+      const tier = Math.min(units.length - 1, Math.floor(Math.log10(abs) / 3));
+      return (n / Math.pow(1000, tier)).toFixed(2).replace(/\.?0+$/, "") + units[tier];
+    }
+
+    function level(id) { return state.levels[id] || 0; }
+    function cost(u) { return u.baseCost * Math.pow(u.growth, level(u.id)); }
+    function adDurationSec() { return Math.max(0.75, 5 * Math.pow(0.92, level(0))); }
+    function rewardPerAd() { return 1 * (1 + level(2) * 0.35) * (1 + level(3)); }
+    function autoplayPerSec() {
+      const lv = level(1);
+      return lv <= 0 ? 0 : 0.15 * lv * (1 + level(2) * 0.1);
+    }
+
+    function grant(amount) {
+      if (amount <= 0) return;
+      state.attention += amount;
+      state.lifetime += amount;
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return fresh();
+        const parsed = JSON.parse(raw);
+        parsed.levels = parsed.levels || [0, 0, 0, 0];
+        return parsed;
+      } catch {
+        return fresh();
+      }
+    }
+
+    function fresh() {
+      return {
+        attention: 0,
+        lifetime: 0,
+        ads: 0,
+        levels: [0, 0, 0, 0],
+        lastSave: Date.now()
+      };
+    }
+
+    function save() {
+      state.lastSave = Date.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    }
+
+    function applyOffline() {
+      const elapsed = Math.min(8 * 3600, Math.max(0, (Date.now() - (state.lastSave || Date.now())) / 1000));
+      const rate = autoplayPerSec() + 0.02 * rewardPerAd();
+      const earned = rate * elapsed;
+      grant(earned);
+      return earned;
+    }
+
+    function setStatus(msg) { el.status.textContent = msg; }
+
+    function render() {
+      el.attention.textContent = format(state.attention) + " Attention";
+      el.stats.textContent = `Ads watched: ${state.ads} · Autoplay: ${format(autoplayPerSec())}/s`;
+      el.watchBtn.disabled = adPlaying;
+      el.watchBtn.textContent = adPlaying ? "WATCHING…" : `WATCH AD (${adDurationSec().toFixed(1)}s)`;
+
+      el.upgrades.innerHTML = "";
+      UPGRADES.forEach((u) => {
+        const lv = level(u.id);
+        const maxed = lv >= u.max;
+        const c = cost(u);
+        const can = !adPlaying && !maxed && state.attention >= c;
+        const btn = document.createElement("button");
+        btn.className = "upgrade" + (can ? " can-buy" : "");
+        btn.disabled = !can;
+        btn.innerHTML = maxed
+          ? `<strong>${u.name} · Lv MAX</strong><span>${u.description}</span>`
+          : `<strong>${u.name} · Lv ${lv} · ${format(c)}</strong><span>${u.description}</span>`;
+        btn.addEventListener("click", () => buy(u));
+        el.upgrades.appendChild(btn);
+      });
+    }
+
+    function buy(u) {
+      if (adPlaying) return;
+      const lv = level(u.id);
+      if (lv >= u.max) return;
+      const c = cost(u);
+      if (state.attention < c) {
+        setStatus("Insufficient Attention. Watch more ads.");
+        return;
+      }
+      state.attention -= c;
+      state.levels[u.id] = lv + 1;
+      setStatus(`Purchased ${u.name}. Synergy increased.`);
+      save();
+      render();
+    }
+
+    function startAd() {
+      if (adPlaying) return;
+      adPlaying = true;
+      adElapsed = 0;
+      adDuration = adDurationSec();
+      const brand = BRANDS[Math.floor(Math.random() * BRANDS.length)];
+      const line = HEADLINES[Math.floor(Math.random() * HEADLINES.length)];
+      el.adHeadline.textContent = `${brand} — ${line}`;
+      el.adOverlay.classList.add("show");
+      setStatus("Optimizing your experience…");
+      render();
+    }
+
+    function completeAd() {
+      adPlaying = false;
+      el.adOverlay.classList.remove("show");
+      const reward = rewardPerAd();
+      grant(reward);
+      state.ads += 1 + level(3);
+      setStatus(`+${format(reward)} Attention. Engagement looks strong.`);
+      save();
+      render();
+    }
+
+    el.watchBtn.addEventListener("click", startAd);
+    el.claimBtn.addEventListener("click", () => el.offlineOverlay.classList.remove("show"));
+
+    const hadProgress = state.ads > 0 || state.levels.some((n) => n > 0) || state.lifetime > 0;
+    const offline = applyOffline();
+    if (hadProgress && offline >= 0.5) {
+      el.offlineBody.textContent = `${format(offline)} Attention earned from background ads.\n(Cap: 8 hours. HR is watching.)`;
+      el.offlineOverlay.classList.add("show");
+    }
+    save();
+    render();
+
+    function tick(now) {
+      const dt = Math.min(0.05, (now - lastTs) / 1000);
+      lastTs = now;
+      if (adPlaying) {
+        adElapsed += dt;
+        const t = Math.min(1, adElapsed / adDuration);
+        el.adFill.style.width = (t * 100) + "%";
+        const remaining = Math.max(0, adDuration - adElapsed);
+        el.adTimer.textContent = remaining > 0.05
+          ? `Skip unavailable · ${remaining.toFixed(1)}s`
+          : "Claiming reward…";
+        if (adElapsed >= adDuration) completeAd();
+      } else {
+        const passive = autoplayPerSec() * dt;
+        if (passive > 0) grant(passive);
+      }
+      render();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    setInterval(save, 2000);
+  </script>
+</body>
+</html>
